@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,15 +18,14 @@ func TestStore(t *testing.T) {
 	defer store.Close()
 
 	key := "test"
-	ctx := context.Background()
-	err := store.Set(ctx, key, 0)
+	err := store.Set(key, 0, 5)
 	assert.Nil(t, err)
 
-	b, err := store.Check(ctx, key)
+	b, err := store.Check(key)
 	assert.Nil(t, err)
 	assert.Equal(t, true, b)
 
-	b, err = store.Delete(ctx, key)
+	b, err = store.Delete(key)
 	assert.Nil(t, err)
 	assert.Equal(t, true, b)
 }
