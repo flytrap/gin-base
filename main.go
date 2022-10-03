@@ -4,17 +4,22 @@ import (
 	"context"
 	"os"
 
-	"github.com/flytrap/gin_template/internal/app"
-	logger "github.com/sirupsen/logrus"
+	"github.com/flytrap/gin-base/internal/app"
+	"github.com/flytrap/gin-base/pkg/logger"
 	"github.com/urfave/cli/v2"
 )
 
 var VERSION = "0.0.1"
 
+// @BasePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @scheme bearer
 func main() {
 	ctx := context.Background()
 	app := cli.NewApp()
-	app.Name = "gin_template"
+	app.Name = "gin-base"
 	app.Version = VERSION
 	app.Usage = "gin based on GIN + GORM + WIRE."
 	app.Commands = []*cli.Command{
@@ -36,20 +41,10 @@ func newWebCmd(ctx context.Context) *cli.Command {
 				Aliases: []string{"c"},
 				Usage:   "App configuration file(.json,.yaml,.toml)",
 			},
-			&cli.StringFlag{
-				Name:    "init",
-				Aliases: []string{"i"},
-				Usage:   "init database data(.json)",
-			},
-			&cli.StringFlag{
-				Name:  "www",
-				Usage: "Static site directory",
-			},
 		},
 		Action: func(c *cli.Context) error {
 			return app.Run(ctx,
 				app.SetConfigFile(c.String("conf")),
-				app.SetInitFile(c.String("init")),
 				app.SetVersion(VERSION))
 		},
 	}

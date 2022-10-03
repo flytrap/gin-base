@@ -3,7 +3,7 @@ package repositories
 import (
 	"strings"
 
-	"github.com/flytrap/gin_template/internal/app/config"
+	"github.com/flytrap/gin-base/internal/app/config"
 	"github.com/google/wire"
 	"gorm.io/gorm"
 )

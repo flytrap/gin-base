@@ -59,8 +59,12 @@ func (s *Store) wrapperKey(key string) string {
 	return fmt.Sprintf("%s:%s", s.prefix, key)
 }
 
-func (s *Store) Get(key string) (string, error) {
-	return s.cli.Get(s.wrapperKey(key)).Result()
+func (s *Store) Get(key string) interface{} {
+	result, err := s.cli.Get(s.wrapperKey(key)).Result()
+	if err != nil {
+		return ""
+	}
+	return result
 }
 
 func (s *Store) Set(key string, v interface{}, expiration time.Duration) error {
@@ -68,12 +72,14 @@ func (s *Store) Set(key string, v interface{}, expiration time.Duration) error {
 	return cmd.Err()
 }
 
-func (s *Store) Delete(key string) (bool, error) {
+func (s *Store) IsExist(key string) bool {
+	cmd := s.cli.Exists(s.wrapperKey(key))
+	return cmd.Err() == nil
+}
+
+func (s *Store) Delete(key string) error {
 	cmd := s.cli.Del(s.wrapperKey(key))
-	if err := cmd.Err(); err != nil {
-		return false, err
-	}
-	return cmd.Val() > 0, nil
+	return cmd.Err()
 }
 
 func (s *Store) Check(key string) (bool, error) {

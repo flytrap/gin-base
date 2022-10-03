@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 
-	"github.com/koding/multiconfig"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -16,30 +15,11 @@ var (
 )
 
 // Load config file (toml/json/yaml)
-func MustLoad(fpaths ...string) {
+func MustLoad(path string) {
 	once.Do(func() {
-		loaders := []multiconfig.Loader{
-			&multiconfig.TagLoader{},
-			&multiconfig.EnvironmentLoader{},
-		}
-
-		for _, fpath := range fpaths {
-			if strings.HasSuffix(fpath, "toml") {
-				loaders = append(loaders, &multiconfig.TOMLLoader{Path: fpath})
-			}
-			if strings.HasSuffix(fpath, "json") {
-				loaders = append(loaders, &multiconfig.JSONLoader{Path: fpath})
-			}
-			if strings.HasSuffix(fpath, "yaml") {
-				loaders = append(loaders, &multiconfig.YAMLLoader{Path: fpath})
-			}
-		}
-
-		m := multiconfig.DefaultLoader{
-			Loader:    multiconfig.MultiLoader(loaders...),
-			Validator: multiconfig.MultiValidator(&multiconfig.RequiredValidator{}),
-		}
-		m.MustLoad(C)
+		viper.SetConfigFile(path)
+		viper.ReadInConfig()
+		viper.Unmarshal(&C)
 	})
 }
 
@@ -55,22 +35,24 @@ func PrintWithJSON() {
 }
 
 type Config struct {
-	RunMode      string
-	WWW          string
-	Swagger      bool
-	PrintConfig  bool
-	HTTP         HTTP
-	LogGormHook  LogGormHook
-	LogMongoHook LogMongoHook
-	Root         Root
-	JWTAuth      JWTAuth
-	RateLimiter  RateLimiter
-	CORS         CORS
-	Redis        Redis
-	Gorm         Gorm
-	MySQL        MySQL
-	Postgres     Postgres
-	Sqlite3      Sqlite3
+	RunMode         string
+	DefaultPassword string
+	Swagger         bool
+	PrintConfig     bool
+	HTTP            HTTP
+	LogGormHook     LogGormHook
+	LogMongoHook    LogMongoHook
+	JWTAuth         JWTAuth
+	RateLimiter     RateLimiter
+	CORS            CORS
+	Redis           Redis
+	Gorm            Gorm
+	MySQL           MySQL
+	Postgres        Postgres
+	Sqlite3         Sqlite3
+	MiniWx          MiniWx
+	MpWx            MpWx
+	AppWx           AppWx
 }
 
 func (c *Config) IsDebugMode() bool {
@@ -93,13 +75,6 @@ type LogGormHook struct {
 
 type LogMongoHook struct {
 	Collection string
-}
-
-type Root struct {
-	UserID   uint64
-	UserName string
-	Password string
-	RealName string
 }
 
 type JWTAuth struct {
@@ -155,7 +130,6 @@ type Gorm struct {
 	MaxIdleConns      int
 	TablePrefix       string
 	EnableAutoMigrate bool
-	Dsn               string
 }
 
 type MySQL struct {
@@ -192,4 +166,19 @@ type Sqlite3 struct {
 
 func (a Sqlite3) DSN() string {
 	return a.Path
+}
+
+type MiniWx struct {
+	AppID     string
+	AppSecret string
+}
+
+type MpWx struct {
+	AppID     string
+	AppSecret string
+}
+
+type AppWx struct {
+	AppID     string
+	AppSecret string
 }

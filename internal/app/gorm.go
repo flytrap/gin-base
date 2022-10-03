@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/flytrap/gin_template/internal/app/config"
-	"github.com/flytrap/gin_template/internal/app/repositories"
+	"github.com/flytrap/gin-base/internal/app/config"
+	"github.com/flytrap/gin-base/internal/app/repositories"
 	mysqlDriver "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -48,7 +48,8 @@ func NewGormDB() (*gorm.DB, error) {
 	switch strings.ToLower(cfg.DBType) {
 	case "mysql":
 		// create database if not exists
-		cfgMs, err := mysqlDriver.ParseDSN(cfg.Dsn)
+		dsn := config.C.MySQL.DSN()
+		cfgMs, err := mysqlDriver.ParseDSN(dsn)
 		if err != nil {
 			return nil, err
 		}
@@ -58,11 +59,11 @@ func NewGormDB() (*gorm.DB, error) {
 			return nil, err
 		}
 
-		dialector = mysql.Open(cfg.Dsn)
+		dialector = mysql.Open(dsn)
 	case "postgres":
-		dialector = postgres.Open(cfg.Dsn)
+		dialector = postgres.Open(config.C.Postgres.DSN())
 	default:
-		dialector = sqlite.Open(cfg.Dsn)
+		dialector = sqlite.Open(config.C.Sqlite3.DSN())
 	}
 
 	db, err := gorm.Open(dialector, gConfig)

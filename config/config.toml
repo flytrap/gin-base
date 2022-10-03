@@ -1,5 +1,6 @@
 # 运行模式(debug:调试,test:测试,release:正式)
 RunMode = "debug"
+DefaultPassword = "123456"
 
 # 是否启用swagger
 Swagger = true
@@ -27,7 +28,7 @@ Format = "text"
 # 日志输出(支持：stdout/stderr/file)
 Output = "stdout"
 # 指定日志输出的文件路径
-OutputFile = "data/gin-admin.log"
+OutputFile = "data/gin-base.log"
 # 是否启用日志钩子
 EnableHook = false
 # 写入钩子的日志级别
@@ -53,16 +54,6 @@ MaxOpenConns = 1
 # 设置空闲连接池中的最大连接数
 MaxIdleConns = 1
 
-[Root]
-# 用户ID
-UserID = 9
-# 登录用户名
-UserName = "root"
-# 登录密码
-Password = "abc-123"
-# 显示名称
-RealName = "Admin"
-
 # redis配置信息
 [Redis]
 # 地址
@@ -70,7 +61,7 @@ Addr = "127.0.0.1:6379"
 # 密码
 Password = ""
 Db = 0
-KeyPrefix = "gosearch"
+KeyPrefix = "base"
 
 [JWTAuth]
 # 是否启用
@@ -78,7 +69,7 @@ Enable = true
 # 签名方式(支持：HS512/HS384/HS512)
 SigningMethod = "HS512"
 # 签名key
-SigningKey = "gin-admin"
+SigningKey = "gin-auth"
 # 过期时间（单位秒）
 Expired = 7200
 # 存储(支持：file/redis)
@@ -88,7 +79,7 @@ FilePath = "data/jwt_auth.db"
 # redis 数据库(如果存储方式是redis，则指定存储的数据库)
 RedisDB = 10
 # 存储到 redis 数据库中的键名前缀
-RedisPrefix = "auth_"
+RedisPrefix = "base:"
 
 # 请求频率限制
 [RateLimiter]
@@ -125,11 +116,9 @@ MaxOpenConns = 150
 # 设置空闲连接池中的最大连接数
 MaxIdleConns = 50
 # 数据库表名前缀
-TablePrefix = "g_"
+TablePrefix = "gin_"
 # 是否启用自动映射数据库表结构
 EnableAutoMigrate = true
-# Dsn = "gin.db"
-Dsn = "root:123456@tcp(127.0.0.1:3306)/gin?charset=utf8mb4&parseTime=True&loc=Local&allowNativePasswords=true"
 
 [MySQL]
 # 连接地址
@@ -162,3 +151,15 @@ SSLMode = "disable"
 [Sqlite3]
 # 数据库路径
 Path = "gin.db"
+
+[MiniWx]
+AppId = "test"
+AppSecret = "test"
+
+[MpWx]
+AppId = "test"
+AppSecret = "test"
+
+[AppWx]
+AppId = "test"
+AppSecret = "test"

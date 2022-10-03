@@ -10,16 +10,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/flytrap/gin_template/internal/app/config"
-	"github.com/flytrap/gin_template/pkg/redis"
+	"github.com/flytrap/gin-base/internal/app/config"
+	"github.com/flytrap/gin-base/pkg/redis"
 	"github.com/jinzhu/copier"
 	logger "github.com/sirupsen/logrus"
 )
 
 type options struct {
 	ConfigFile string
-	InitFile   string
-	WWWDir     string
 	Version    string
 }
 
@@ -31,32 +29,10 @@ func SetConfigFile(s string) Option {
 	}
 }
 
-func SetInitFile(s string) Option {
-	return func(o *options) {
-		o.InitFile = s
-	}
-}
-
 func SetVersion(s string) Option {
 	return func(o *options) {
 		o.Version = s
 	}
-}
-
-func Import(ctx context.Context, opts ...Option) error {
-	var o options
-	for _, opt := range opts {
-		opt(&o)
-	}
-	config.MustLoad(o.ConfigFile)
-	config.PrintWithJSON()
-
-	injector, injectorCleanFunc, err := BuildInjector()
-	if len(o.InitFile) > 0 {
-		err = injector.ImportService.Import(o.InitFile)
-	}
-	defer injectorCleanFunc()
-	return err
 }
 
 func Init(ctx context.Context, opts ...Option) (func(), error) {
@@ -66,9 +42,6 @@ func Init(ctx context.Context, opts ...Option) (func(), error) {
 	}
 
 	config.MustLoad(o.ConfigFile)
-	if v := o.WWWDir; v != "" {
-		config.C.WWW = v
-	}
 	config.PrintWithJSON()
 
 	logger.Info(fmt.Sprintf("Start server,#run_mode %s,#version %s,#pid %d", config.C.RunMode, o.Version, os.Getpid()))
