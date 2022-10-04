@@ -1,8 +1,6 @@
 package router
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )
@@ -21,7 +19,6 @@ type Router struct {
 
 func (a *Router) Register(app *gin.Engine) error {
 	a.RegisterAPI(app)
-	a.RegisterPage(app)
 	return nil
 }
 
@@ -35,11 +32,3 @@ func (a *Router) Prefixes() []string {
 func (a *Router) RegisterAPI(app *gin.Engine) {
 }
 
-// RegisterPage register page group router
-func (a *Router) RegisterPage(app *gin.Engine) {
-
-	app.NoRoute(func(c *gin.Context) {
-		// 实现内部重定向
-		c.Redirect(http.StatusSeeOther, "/")
-	})
-}
